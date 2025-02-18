@@ -5,7 +5,7 @@ const KEY = "cf9cd0e1";
 
 function App() {
   const [movies, setMovies] = useState([]);
-  const [query, setQuery] = useState("top movies");
+  const [query, setQuery] = useState("");
 
   useEffect(
     function () {
@@ -23,7 +23,7 @@ function App() {
 
   return (
     <div className="pt-3 px-4">
-      <NavBar movies={movies} onHandleQuery={setQuery} />
+      <NavBar movies={movies} query={query} onHandleQuery={setQuery} />
 
       <ListsContainer movies={movies} />
     </div>

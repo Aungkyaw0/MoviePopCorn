@@ -1,12 +1,12 @@
 import { useState } from "react";
 
 
-function NavBar({movies, onHandleQuery}) {
+function NavBar({movies, query, onHandleQuery}) {
   return (
     <nav className="bg-blue-600 rounded-lg mb-3">
       <ul className="flex justify-between mx-10 h-15 items-center font-semibold">
         <Logo />
-        <SearchBar onHandleQuery={onHandleQuery} />
+        <SearchBar query={query} onHandleQuery={onHandleQuery} />
         <FoundResult movies={movies} />
       </ul>
     </nav>
@@ -21,8 +21,7 @@ function Logo() {
   );
 }
 
-function SearchBar({onHandleQuery}) {
-    const [searchInput, setSearchInput] = useState("");
+function SearchBar({query, onHandleQuery}) {
     
     function handleSearchSubmit(e){
         e.preventDefault();
@@ -34,15 +33,13 @@ function SearchBar({onHandleQuery}) {
     return (
     <>
       <li>
-        <form onSubmit={handleSearchSubmit}>
         <input
           type="text"
           placeholder="Search for movies..."
-          value={searchInput}
-          onChange={(e) => setSearchInput(e.target.value)}
+          value={query}
+          onChange={(e) => onHandleQuery(e.target.value)}
           className="w-90 py-1 indent-4 rounded-md text-base font-normal bg-blue-500 focus:outline-none"
         />
-        </form>
       </li>
     </>
   );
