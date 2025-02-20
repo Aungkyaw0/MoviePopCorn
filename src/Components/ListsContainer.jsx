@@ -1,5 +1,8 @@
 import { useEffect, useState } from "react";
 import { Atom } from "react-loading-indicators";
+// import ReactStars from "react-rating-stars-component";
+import { Rating } from "@smastrom/react-rating";
+import StarRating from "./StarRating";
 function ListsContainer({ movies }) {
   const [selectedID, setSelectedID] = useState("");
   const [movieDetail, setMovieDetail] = useState({});
@@ -11,10 +14,11 @@ function ListsContainer({ movies }) {
 
   return (
     <div className="flex justify-between rounded-lg mb-3">
-      {/* Left Column */}
-      <div className="w-[59%] bg-slate-900 rounded-2xl">
+      {/* Left Column with Scrolling */}
+      <div className="w-[59%] overflow-y-auto max-h-screen bg-slate-900 rounded-2xl">
         <MovieComponent movies={movies} onViewDetail={onViewDetail} />
       </div>
+
       {/* Right Column */}
       <div className="w-[39%] bg-slate-900 rounded-2xl">
         <MovieDetail
@@ -22,10 +26,6 @@ function ListsContainer({ movies }) {
           movieDetail={movieDetail}
           OnSetMovieDetail={setMovieDetail}
         />
-
-        {/* <div className="p-4 bg-slate-800 rounded-lg shadow-lg">
-            <p className="text-white text-center">No movie selected.</p>
-          </div> */}
       </div>
     </div>
   );
@@ -33,22 +33,34 @@ function ListsContainer({ movies }) {
 
 function MovieDetail({ selectedID, movieDetail, OnSetMovieDetail }) {
   const [isLoading, setIsLoading] = useState(false);
+  const [rating, setRating] = useState(0);
+  const [title, setTitle] = useState("usePopCorn")
+  const handleRatingChange = (newRating) => {
+    console.log("Selected Rating:", newRating);
+  };
+
   useEffect(
     function () {
+        const controller = new AbortController();
       setIsLoading(true);
       async function fetchMovieDetail() {
         const res = await fetch(
-          `http://www.omdbapi.com/?apikey=cf9cd0e1&i=${selectedID}`
+          `http://www.omdbapi.com/?apikey=cf9cd0e1&i=${selectedID}`, {signal: controller.signal }
         );
         const data = await res.json();
-        if(data.Response === "True") {
-            
-            OnSetMovieDetail(data);
+        if (data.Response === "True") {
+          OnSetMovieDetail(data);
+          console.log("TTTTT" +movieDetail.Title);
+          setTitle(prev => `usePopCorn | ${movieDetail.Title}`)
+          document.title = title
         }
         setIsLoading(false);
       }
       fetchMovieDetail();
-      console.log(movieDetail);
+
+      return function (){
+        controller.abort();
+      }
     },
     [selectedID]
   );
@@ -91,6 +103,12 @@ function MovieDetail({ selectedID, movieDetail, OnSetMovieDetail }) {
               </p>
 
               {/* You can add more movie details here */}
+            </div>
+          </div>
+          <div className="rating flex flex-col items-center justify-center my-3">
+            <div className="my-3 h-30 bg-gray-800 flex flex-col gap-5 items-center justify-center rounded-lg w-100">
+              <StarRating maxRating={5} onRatingChange={handleRatingChange} />
+              <button className="bg-cyan-800 py-3 px-4 rounded-lg text-sm font-semibold"> ADD TO WATCH LIST</button>
             </div>
           </div>
           <div className="plot pt-3">
